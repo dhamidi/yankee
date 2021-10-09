@@ -2,9 +2,9 @@
 set -eu
 
 declare -A _yankee_required=()
-declare -A _yankee_subcommands=()
-declare -A _yankee_subcommand_summary=()
+declare -A _yankee_subcommand=()
 declare -A _yankee_subcommand_help=()
+declare -A _yankee_subcommand_summary=()
 
 main() {
   add_lib_to_path
@@ -12,9 +12,12 @@ main() {
   require help
   require init
   require match
+  require insert
   require version
+  require default
 
-  if has_subcommand "$1"; then 
+  export YANKEE=$0
+  if [[ "$#" -gt 0 ]] && has_subcommand "$1"; then 
     subcommand "$@"
   else
     subcommand help
@@ -22,11 +25,11 @@ main() {
 }
 
 subcommand() {
-  ${_yankee_subcommands["$1"]} "${@:2}"
+  ${_yankee_subcommand["$1"]} "${@:2}"
 }
 
 has_subcommand() {
-  [[ -n "${_yankee_subcommands[$1]:-}" ]]
+  [[ -n "${_yankee_subcommand[$1]:-}" ]]
 }
 
 define_subcommand() {
@@ -34,9 +37,9 @@ define_subcommand() {
   local summary="$2"
   local long_help=$(cat -)
 
-  _yankee_subcommands[$name]=subcommand_${name}
+  _yankee_subcommand[$name]=subcommand_${name}
   _yankee_subcommand_summary[$name]="$2"
-  _yankee_subcommand_help[$name]="$long_help"
+  _yankee_subcommand_help[$name]="$long_help" 
 }
 
 require() {
@@ -52,11 +55,11 @@ require() {
 add_lib_to_path() {
   local lib=${BASH_SOURCE%/yankee}
   lib=${lib%bin}
-  lib=${lib%lib}/share/yankee
+  lib="${lib}lib"
   if [[ -d "$lib" ]]; then
     PATH="$lib:$PATH"
   fi
-  lib="${lib}/lib"
+  lib=${lib%/lib}/share/yankee
   if [[ -d "$lib" ]]; then
     PATH="$lib:$PATH"
   fi

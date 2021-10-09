@@ -11,7 +11,7 @@ subcommand_help() {
   printf "Usage: yankee SUBCOMMAND\n"
   printf "\n"
   printf "Available subcommands:\n\n"
-  for subcommand in "${!_yankee_subcommands[@]}"; do
+  for subcommand in "${!_yankee_subcommand[@]}"; do
     printf "  %-20s" "$subcommand"
     summary=${_yankee_subcommand_summary[$subcommand]:-}
     if [[ -n "$summary" ]]; then
@@ -23,7 +23,7 @@ subcommand_help() {
 }
 
 define_subcommand help 'Show this help or help for a subcommand' <<HELP
-WIthout arguments, shows a summary of all available subcommands.
+Without arguments, shows a summary of all available subcommands.
 
 To get help about a specific command, run:
 
